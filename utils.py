@@ -3,6 +3,10 @@ import io
 from datetime import datetime 
 import uuid 
 from transformers import BlipProcessor, BlipForConditionalGeneration
+from google.cloud import storage 
+
+
+
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained(
@@ -25,10 +29,14 @@ def get_timestamp():
     return datetime.now().isoformat()
 
 def upload_to_blob(image_byte):
-
-    bucket_name = "sidflasktest-347939299" 
-    storage_client = storage.Client() 
+    try:
+        bucket_name = "sidflasktest-347939299" 
+        storage_client = storage.Client() 
     
-    bucket = storage_client.bucket(bucket_name) 
-    blob = bucket.blob(f"image_to_text/{create_unique_uuid()}")
-    blob.upload_from_string(image_byte)
+        bucket = storage_client.bucket(bucket_name) 
+        blob = bucket.blob(f"image_to_text/{create_unique_uuid()}")
+        blob.upload_from_string(image_byte) 
+        value = 'upload success'
+    except Exception as e: 
+        value = str(e)
+    return {'upload_message': value}

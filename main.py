@@ -1,6 +1,6 @@
 from flask import Flask , request, jsonify 
 from datetime import datetime 
-from utils import image_to_text 
+from utils import image_to_text , upload_to_blob 
 
 app = Flask(__name__)
 
@@ -13,10 +13,10 @@ def index():
             return jsonify({'error':'no file'})
 
         try: 
-            print(f"\n\n\n\n{request.remote_addr}\n\n\n\n")
             image_bytes = file.read() 
+            upload_message = upload_to_blob(image_bytes)
             data = image_to_text(image_bytes)
-            return jsonify({'prediction':data})   
+            return jsonify({'prediction':data,'upload_message': upload_message})   
         except Exception as e: 
             return jsonify({'error': str(e)})
     return "Welcome"
